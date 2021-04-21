@@ -4,11 +4,11 @@ public class OddEvenList {
 
 	public static void main(String[] args) {
 		OddEvenList test = new OddEvenList();
-		int[] nums = {1,8,3,6,5,4,7,2,9};
+		int[] nums = {1,2,3,4,5};
 		ListNode node = ListNodeUtils.makeList(nums);
 		ListNodeUtils.print(node);
 		
-		ListNodeUtils.print(test.sortOddEvenList(node));
+		ListNodeUtils.print(test.reverseKGroup(node, 3));
 	}
 	
 	/**
@@ -110,5 +110,40 @@ public class OddEvenList {
 		}
 		return head;
 	}
+	
+	public ListNode reverseKGroup(ListNode head, int k) {
+		if(head == null || head.next == null) return head;
+		int len = 0;
+		ListNode p = head;
+		while(p != null) {
+			len++;
+			p = p.next;
+		}
+		int total = len/k;
+		ListNode dummy = new ListNode();
+		dummy.next = head;
+		
+		ListNode pre = dummy;
+		ListNode left = null;
+		int count = 0;
+		while(count < total) {
+			left = pre.next;
+			int index = 1;
+			p = left;
+			while(index < k) {
+				ListNode cur = p.next;
+				p.next = p.next.next;
+				cur.next = pre.next;
+				pre.next = cur;
+				
+				p = p.next;
+				index++;
+			}
+			pre = left;
+			count++;
+		}
+		
+		return dummy.next;
+    }
 	
 }

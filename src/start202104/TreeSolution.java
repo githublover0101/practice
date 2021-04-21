@@ -376,4 +376,202 @@ public class TreeSolution {
 		return list;
     }
 	
+	/***
+	 * https://leetcode.com/problems/validate-binary-search-tree/
+	 * 判断二叉树是否为二叉搜索树
+	 * 
+	 * @param root
+	 * @return
+	 */
+	public boolean isValidBST(TreeNode root) {
+		if(root == null) return true;
+		//初始化传入为空
+		return isValidBST(root, null, null);
+    }
+	
+	private boolean isValidBST(TreeNode root, Integer min, Integer max) {
+		if(root == null) return true;
+		//只有满足root条件时，才递归检测左子树和右子树
+		if((min == null || root.val > min) && (max == null || root.val < max)) {
+			return isValidBST(root.left, min, root.val) && isValidBST(root.right, root.val, max);
+		}
+		return false;
+	}
+	
+	/**
+	 * https://leetcode-cn.com/problems/path-sum/
+	 * 路径总和为targetSum
+	 * 
+	 * @param root
+	 * @param targetSum
+	 * @return
+	 */
+	public boolean hasPathSum(TreeNode root, int targetSum) {
+        if(root == null) return false;
+        if(root.left == null && root.right == null && root.val == targetSum) return true;
+        return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val);
+    }
+	
+	
+	/**
+	 * https://leetcode.com/problems/invert-binary-tree/
+	 * 翻转二叉树
+	 * @param root
+	 * @return
+	 */
+	public TreeNode invertTree(TreeNode root) {
+		if(root == null) return root;
+		if(root.left == null && root.right == null) return root;
+		
+		// 递归处理左子树		
+		TreeNode left = invertTree(root.left);
+		// 递归处理右子树
+		TreeNode right = invertTree(root.right);
+		
+		//左右交换
+		root.left = right;
+		root.right = left;
+		return root;
+    }
+	
+	
+	public void flatten(TreeNode root) {
+		if(root == null) return;
+		if(root.left == null && root.right == null) return;
+		dfsFlatten(root);
+    }
+	
+	private TreeNode dfsFlatten(TreeNode root) {
+		if(root == null) return root;
+		if(root.left == null && root.right == null) return root;
+		
+		TreeNode left = root.left;
+		TreeNode right = root.right;
+		root.left = null;
+		if(left != null) {
+			root.right = left;
+			root = dfsFlatten(left);
+		}
+		if(right != null) {
+			root.right = right;
+			root = dfsFlatten(right);
+		}
+		return root;
+	}
+	
+	/**
+	 * 
+	 * https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+	 * 
+	 * 前序遍历存储到list中，然后再对数组进行拼接成链表
+	 * 
+	 * 时间复杂度为O(n)，空间复杂度为O(n)
+	 * 
+	 * @param root
+	 */
+	public void flattenByPreorder(TreeNode root) {
+		if(root == null) return;
+		if(root.left == null && root.right == null) return;
+		List<TreeNode> list = new ArrayList<TreeNode>();
+		preorderTraversal(root, list);
+		int len = list.size();
+		for(int i = 1; i < len; i ++) {
+			TreeNode pre = list.get(i-1);
+			TreeNode cur = list.get(i);
+			pre.left = null;
+			pre.right = cur;
+		}
+    }
+	
+	private void preorderTraversal(TreeNode root, List<TreeNode> list) {
+		if(root == null) return;
+		list.add(root);
+		preorderTraversal(root.left, list);
+		preorderTraversal(root.right, list);
+	}
+	
+	
+	/**
+	 * 
+	 * https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+	 * 二叉树展开为链表
+	 * 
+	 * 展开后的单链表应该与二叉树 先序遍历 顺序相同。
+	 * 
+	 * 解法二：寻找前置节点的方式
+	 * 
+	 * 时间复杂度为O(n)，空间复杂度为O(1)
+	 * 
+	 * @param root
+	 */
+	public void flattenByPre(TreeNode root) {
+		if(root == null) return;
+		if(root.left == null && root.right == null) return;
+		TreeNode cur = root;
+		TreeNode next = null;
+		TreeNode pre = null;
+		while(cur != null) {
+			if(cur.left != null) {
+				next = cur.left;
+				cur.left = null;
+				pre = next;
+				
+				//遍历找到前驱节点pre
+				while(pre.right != null) {
+					pre = pre.right;
+				}
+				pre.right = cur.right;
+				cur.right = next;
+			}
+			cur = cur.right;
+		}
+		
+	}
+	
+	TreeNode head = null;
+	TreeNode tail = null;
+	
+	/**
+	 * https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
+	 * 剑指 Offer 36. 二叉搜索树与双向链表
+	 * 
+	 * 头条面试题：
+	 * 将二叉树以中序遍历的方式转换成双向链表，额外空间复杂度是O(1)
+	 * 
+	 * @param root
+	 * @return
+	 */
+	public TreeNode treeToDoublyList(TreeNode root) {
+		if(root == null) return root;
+		
+		build(root);
+		
+		//遍历完成后修改head的前驱left和tail的后继right
+		head.left = tail;
+		tail.right = head;
+		return head;
+	}
+	
+	//采用中序遍历处理
+	private void build(TreeNode root) {
+		if(root == null) return;
+		//先递归遍历左子树
+		build(root.left);
+		
+		if(head == null && tail == null) { //当head和tail是null时，直接赋值成root
+			head = tail = root;
+		} else {
+			//将节点拼接到tail尾结点，并修改尾结点为该节点
+			tail.right = root;
+			root.left = tail;
+			tail = root; //每次修改尾结点指向
+		}
+		
+		//再递归遍历右子树
+		build(root.right);
+	}
+	
+	public int sumNumbers(TreeNode root) {
+		
+    }
 }
