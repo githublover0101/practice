@@ -571,7 +571,55 @@ public class TreeSolution {
 		build(root.right);
 	}
 	
-	public int sumNumbers(TreeNode root) {
-		
+	/**
+	 * https://leetcode.com/problems/path-sum-ii/
+	 * 
+	 * @param root
+	 * @param targetSum
+	 * @return
+	 */
+	public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        List<List<Integer>> allList = new ArrayList<List<Integer>>();
+        if(root == null) return allList;
+        List<Integer> subList = new ArrayList<Integer>();
+        dfs(root, targetSum, subList, allList);
+        return allList;
     }
+    
+    private void dfs(TreeNode root, int targetSum, List<Integer> subList, List<List<Integer>> allList) {
+        if(root == null) return;
+        
+        subList.add(root.val);
+        targetSum = targetSum - root.val;
+        
+        //如果遇到正确的结果，将其加入到结果列表 allList中
+        if(root.left == null && root.right == null && targetSum == 0) {
+            allList.add(new ArrayList<Integer>(subList));
+        }
+        
+        dfs(root.left, targetSum, subList, allList);
+        dfs(root.right, targetSum, subList, allList);
+        subList.remove(subList.size()-1);
+    }
+    
+    
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+    	if(preorder.length == 0 || inorder.length == 0) return null;
+    	return buildTree(preorder, 0, preorder.length-1, inorder, 0, inorder.length-1);
+    }
+    
+    private TreeNode buildTree(int[] preorder, int preleft, int preright, int[] inorder, int inleft, int inright) {
+    	int rootVal = preorder[preleft];
+    	TreeNode root = new TreeNode();
+    	
+    	int index = inleft;
+    	while(index <= inright && inorder[index] != rootVal) index++;
+    	int leftCount = index - inleft;
+    	//pre left [preleft+1, preleft+leftCount], [preleft+leftCount+1, preright]
+    	//in left [inleft, inleft+leftCount-1, inleft+leftCount+1, inright]
+    	root.left = buildTree(preorder, preleft+1, preleft+leftCount, inorder, inleft, inleft+leftCount-1);
+    	root.right = buildTree(preorder, preleft+leftCount+1, preright, inorder, inleft+leftCount+1, inright);
+    	return root;
+    }
+	
 }
