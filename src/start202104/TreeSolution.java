@@ -571,7 +571,100 @@ public class TreeSolution {
 		build(root.right);
 	}
 	
-	public int sumNumbers(TreeNode root) {
-		
+	/**
+	 * 在二叉搜索树中查找第k小的元素
+	 * 时间复杂度为O(n)，空间复杂度为O(n)
+	 * @param root
+	 * @param k
+	 * @return
+	 */
+	public int kthSmallest(TreeNode root, int k) {
+        if(root == null) return -1;
+        List<Integer> list = new ArrayList<Integer>();
+        
+        //先中序遍历，存储到list中，直接获取k-1
+        convertToListByInorder(root, list);
+        if(k < 1 || k > list.size()) return -1;
+        return list.get(k-1);
     }
+	
+	private void convertToListByInorder(TreeNode root, List<Integer> list) {
+		if(root == null) return;
+		convertToListByInorder(root.left, list);
+		list.add(root.val);
+		convertToListByInorder(root.right, list);
+	}
+	
+	
+	/**
+	 * 中序遍历，遍历到第k个则返回，不需要遍历整棵树
+	 * 时间复杂度：O(H+k)，其中 H 指的是树的高度
+	 * @param root
+	 * @param k
+	 * @return
+	 */
+	public int kthSmallestII(TreeNode root, int k) {
+        if(root == null) return -1;
+        List<Integer> list = new ArrayList<Integer>();
+        //先中序遍历，存储到list中
+        convertToListByInorderWithK(root, list, k);
+        return list.get(k-1);
+    }
+	
+	//不需要中序遍历所有节点，仅需要遍历k个节点即可
+	private void convertToListByInorderWithK(TreeNode root, List<Integer> list, int k) {
+		if(root == null) return;
+		
+		//已经遍历了k个，结束遍历
+		if(list.size() == k) return;
+		convertToListByInorderWithK(root.left, list, k);
+		list.add(root.val);
+		convertToListByInorderWithK(root.right, list, k);
+	}
+	
+	//非递归方式中序遍历，遍历到第k个，立即返回
+	//时间复杂度为O(H+k)，空间复杂度为O(H+k)，H为树的高度 
+	public int kthSmallestIII(TreeNode root, int k) {
+        if(root == null) return -1;
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        TreeNode p = root;
+        int index = 0;
+        while(p != null || !stack.isEmpty()) {
+        	if(p != null) {
+        		stack.push(p);
+        		p = p.left;
+        	} else {
+        		p = stack.pop();
+        		index ++;
+        		if(index == k) {
+        			return p.val;
+        		}
+        		p = p.right;
+        	}
+        }
+        return -1;
+    }
+	
+	//获取左右子树节点数：
+	// 1）如果左子树节点数 == k-1，则直接返回root；
+	// 2）如果左子树节点数 > k-1，在右边查找
+	// 3）如果左子树节点数 < k-1，在左边查找
+	public int kthSmallestIIII(TreeNode root, int k) {
+		if(root == null) return 0;
+		int left = numberOfNodes(root.left);
+		if(left == k-1) {
+			return root.val;
+		} else if(left > k-1) {
+			return kthSmallestIIII(root.left, k);
+		} else {
+			//在右子树查找，注意获取个数为 k-left-1
+			return kthSmallestIIII(root.right, k-left-1);
+		}
+	}
+	
+	//获取节点数函数
+	private int numberOfNodes(TreeNode root) {
+		if(root == null) return 0;
+		return numberOfNodes(root.left) + numberOfNodes(root.right) + 1;
+	}
 }
