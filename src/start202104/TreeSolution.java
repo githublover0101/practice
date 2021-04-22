@@ -718,5 +718,77 @@ public class TreeSolution {
     	root.right = buildTree(preorder, preleft+leftCount+1, preright, inorder, inleft+leftCount+1, inright);
     	return root;
     }
-	
+    
+    
+    /**
+     * https://leetcode.com/problems/sum-root-to-leaf-numbers/
+     * 129. 求根到叶子节点数字之和
+     * 
+     * 时间复杂度为O(n), 空间复杂度为O(n)
+     */
+    int totalSum = 0;
+    public int sumNumbers(TreeNode root) {
+    	if(root == null) return 0;
+    	int subSum = 0;
+    	computeSum(root, subSum);
+    	return totalSum;
+    }
+    
+    private void computeSum(TreeNode root, int subSum) {
+    	if(root == null) return;
+    	subSum = subSum*10 + root.val;
+    	if(root.left == null && root.right == null) {
+    		//当遇到叶子节点的时候，需要将当前子计算结果加入到总结果中
+    		totalSum += subSum;
+    		return;
+    	}
+    	computeSum(root.left, subSum);
+    	computeSum(root.right, subSum);
+    }    
+    
+    
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) return null;
+        ListNode p = headA;
+        ListNode q = headB;
+        
+        //分别计算出链表的长度len1和len2
+        int len1 = 0;
+        while(p != null) {
+        	len1++;
+        	p = p.next;
+        }
+        int len2 = 0;
+        while(q != null) {
+        	len2++;
+        	q = q.next;
+        }
+        
+        //针对较长的链表，可以用指针先走 len1-len2步
+        ListNode first = null; //the long one
+        ListNode second = null;
+        int size = 0;
+        if(len1 > len2) {
+        	first = headA;
+        	second = headB;
+        	size = len1-len2;
+        } else {
+        	first = headB;
+        	second = headA;
+        	size = len2-len1;
+        }
+        int k = 0;
+        while(k < size) {
+        	first = first.next;
+        	k++;
+        }
+        
+        //两个指针再同时一步一步走
+        while(first != second) {
+        	first = first.next;
+        	second = second.next;
+        }
+        return first;
+    }
+    
 }
