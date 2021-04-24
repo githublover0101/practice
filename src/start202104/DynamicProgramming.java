@@ -359,6 +359,8 @@ public class DynamicProgramming {
     }
 	
 	/**
+	 * https://leetcode.com/problems/trapping-rain-water/
+	 * 接雨水
 	 * 解法二：动态规划
 	 * 
 	 * （1）找到数组中从下标i到最左端最高的条形块高度 leftMax
@@ -397,6 +399,133 @@ public class DynamicProgramming {
         	sum += Math.min(leftMax[i], rightMax[i]) - height[i];
         }
         return sum;
+    }
+	
+	/**
+	 * https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/
+	 * 
+	 * 最长重复子数组
+	 * 
+	 * 动态规划
+	 * 定义dp[i][j]表示以nums1[i] 和nums2[j]结尾最长公共子数组长度
+	 * 
+	 * dp[i][j] = dp[i-1][j-1]+1, 当nums1[i] == nums2[j] 时
+	 * dp[i][j] = 0, 当nums1[i] != nums2[j] 时
+	 * 
+	 * 最终结果找dp[i][j]中的最大值
+	 * 
+	 * 时间复杂度为O(nm)，空间复杂度为O(nm)
+	 * 
+	 * @param nums1
+	 * @param nums2
+	 * @return
+	 */
+	public int findLength(int[] nums1, int[] nums2) {
+		if(nums1.length == 0) return 0;
+		if(nums2.length == 0) return 0;
+		
+		int len1 = nums1.length;
+		int len2 = nums2.length;
+		int max = 0;
+		int[][] dp = new int[len1+1][len2+1];
+		for(int i = 1; i <= len1; i++) {
+			for(int j = 1; j <= len2; j++) {
+				
+				//如果nums1[i-1] == nums2[j-1]，则dp[i][j] = dp[i-1][j-1]+1
+				if(nums1[i-1] == nums2[j-1]) {
+					dp[i][j] = dp[i-1][j-1] + 1;
+				} else {
+					dp[i][j] = 0;
+				}
+				
+				max = Math.max(max, dp[i][j]);
+			}
+		}
+		return max;
+    }
+	
+	
+	/**
+	 * https://leetcode-cn.com/problems/longest-palindromic-substring/
+	 * 最长回文子串
+	 * 
+	 * 动态规划:
+	 * dp[i][j] 表示 s[i:j]之间是否为回文串
+	 * 
+	 * dp[i][i] = true
+	 * dp[i][i+1] = true, if s[i]==s[i+1] 时，否则 dp[i][i+1]=false
+	 * dp[i][j] = dp[i+1][j-1], 当s[i] == s[j]时
+	 * 
+	 * 
+	 * 时间复杂度为O(n^2)，空间复杂度为O(n^2)
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public String longestPalindrome(String s) {
+		if(s == null || s.length() == 0) return s;
+		int len = s.length();
+		boolean[][] dp = new boolean[len][len];
+		int max = 1;
+		String res = s.substring(0,1);
+		for(int i = 0; i < len; i++) {
+			dp[i][i] = true;
+			if(i < len-1 && s.charAt(i) == s.charAt(i+1)) {
+				dp[i][i+1] = true;
+				if(max < 2) {
+					max = 2;
+					res = s.substring(i, i+1);
+				}
+			}
+		}
+		
+		for(int j = 2; j < len; j++) {
+			for(int i = 0; i < j; i++) {
+				if(s.charAt(i) == s.charAt(j)) {
+					dp[i][j] = dp[i+1][j-1];
+				}
+				if(dp[i][j] && j-i+1 > max) {
+					max = j-i+1;
+					res = s.substring(i,j);
+				}
+			}
+		}
+		return res;
+		
+    }
+	
+	
+	//最长回文子串
+	//时间复杂度为O(n^2)，空间复杂度为O(n^2)
+	public String longestPalindromeII(String s) {
+		if(s == null || s.length() == 0) return s;
+		int len = s.length();
+		boolean[][] dp = new boolean[len][len];
+		int max = 1;
+		String res = s.substring(0,1);
+		
+		//由于需要知道 dp[i+1]，才会知道dp[i]，所以 i 需要倒着遍历
+		//i 从[len-1....0]
+		for(int i = len-1; i >= 0; i--) {
+			for(int j = i; j < len; j++) {
+				if(s.charAt(i) == s.charAt(j)) {
+					if(j - i < 2) {
+						//当j-i <=2时，j=i 或者 j=i+1
+						//dp[i][i] = true
+						//dp[i][i+1] = true
+						dp[i][j] = true;
+					} else {
+						dp[i][j] = dp[i+1][j-1];
+					}
+				}
+				if(dp[i][j] && j-i+1 > max) {
+					max = j-i+1;
+					res = s.substring(i, j+1);
+				}
+			}
+		}
+		return res;
+		
     }
 	
 }
