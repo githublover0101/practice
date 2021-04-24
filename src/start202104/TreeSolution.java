@@ -1,7 +1,9 @@
 package start202104;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 class TreeNode {
@@ -791,4 +793,65 @@ public class TreeSolution {
         return first;
     }
     
+    //判断链表是否有环
+    public boolean hasCycle(ListNode head) {
+        if(head == null || head.next == null) return false;
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null) {
+        	slow = slow.next;
+        	fast = fast.next.next;
+        	if(slow == fast) {
+        		return true;
+        	}
+        }
+        return false;
+    }
+    
+    //判断链表是否有环，如果有环找到环的所在节点
+    public ListNode detectCycle(ListNode head) {
+    	if(head == null || head.next == null) return null;
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null) {
+        	slow = slow.next;
+        	fast = fast.next.next;
+        	if(slow == fast) {
+        		break;
+        	}
+        }
+        //如果fast==null，说明不存在环
+        if(fast == null || fast.next == null) return null;
+        
+        slow = head;
+        while(slow != fast) {
+        	fast = fast.next;
+        	slow = slow.next;
+        }
+        return slow;
+    }
+    
+    public boolean isValid(String s) {
+        if(s == null || s.length() == 0) return false;
+        Map<Character, Character> map = new HashMap<Character, Character>();
+        map.put(']', '[');
+        map.put('}', '{');
+        map.put(')', '(');
+        
+        Stack<Character> stack = new Stack<Character>();
+        int len = s.length();
+        char c;
+        for(int i = 0; i < len; i ++) {
+        	c = s.charAt(i);
+        	
+        	if(map.containsKey(c)) {
+        		if(stack.isEmpty() || stack.pop() != map.get(c)) {
+        			return false;
+        		}
+        	} else {
+        		stack.push(c);
+        	}
+        }
+        return stack.isEmpty();
+    }
 }
