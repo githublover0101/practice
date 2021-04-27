@@ -1,5 +1,6 @@
 package start202104;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class DynamicProgramming {
@@ -526,6 +527,64 @@ public class DynamicProgramming {
 		}
 		return res;
 		
+    }
+	
+	
+	/**
+	 * https://leetcode-cn.com/problems/coin-change/
+	 * 
+	 * 零钱兑换：求可以兑换的最少硬币个数
+	 * 
+	 * 定义dp[i] 为当兑换值为 i时，兑换方案的数量，则：
+	 * 对于每一种coin
+	 * （1）dp[i] = min(dp[i], dp[i-coins] + 1)
+	 * （2）边界条件：dp[0] = 0
+	 * 
+	 * 时间复杂度：O(amount x n)，其中 n 为 coins 大小
+	 * 空间复杂度：O(amount)
+	 * @param coins
+	 * @param amount
+	 * @return
+	 */
+	public int coinChange(int[] coins, int amount) {
+		//dp[0] = 0
+		//dp[i] = min(dp[i], dp[i-coins] + 1)
+		if(coins.length == 0) return 0;
+		int[] dp = new int[amount + 1];
+
+		//初始化dp数组，为当前amount+1值
+        int max = amount+1;
+		Arrays.fill(dp, max);
+		dp[0] = 0;
+		//外循环amount，内循环coins
+		for(int i=0; i <= amount; i++) {
+			for(int j = 0; j < coins.length; j++) {
+				if(coins[j] <= i) {
+					dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+				}
+			}
+		}
+		
+		//如果dp[amount]大于amount，说明没有找到兑换方案，则返回-1
+		return dp[amount] > amount ? -1 : dp[amount];
+    }
+	
+	/**
+	 * 零钱兑换II：求总共有多少兑换方式
+	 * 
+	 * @param amount
+	 * @param coins
+	 * @return
+	 */
+	public int change(int amount, int[] coins) {
+		int[] dp = new int[amount+1];
+		for(int i = 0; i <= amount; i++) {
+			for(int j = 0; j < coins.length; j++) {
+				if(coins[j] > i) continue;
+				dp[i] += dp[i-coins[j]] + 1;
+			}
+		}
+		return dp[amount];
     }
 	
 }
