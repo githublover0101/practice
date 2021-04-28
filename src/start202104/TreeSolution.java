@@ -2,6 +2,7 @@ package start202104;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -886,4 +887,42 @@ public class TreeSolution {
     	return Math.max(left, right) + root.val;
     }
 
+    /** 
+     * 二叉树的右视图
+     * 层次遍历，遍历每层的元素，将每层的最后一位元素放入到结果集中
+     * 
+     * @param root
+     * @return
+     */
+    public List<Integer> rightSideView(TreeNode root) {
+    	List<Integer> list = new ArrayList<Integer>();
+    	if(root == null) return list;
+    	
+    	LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+    	queue.add(root);
+    	
+    	int index = 0;
+    	int levelSize = 0;
+    	while(!queue.isEmpty()) {
+    		//获取当前队列长度，即每一层的元素个数
+    		levelSize = queue.size();
+    		index = 0;
+    		while(index < levelSize) {
+    			TreeNode cur = queue.pop();
+    			if(cur.left != null) {
+    				queue.add(cur.left);
+    			}
+    			if(cur.right != null) {
+    				queue.add(cur.right);
+    			}
+    			index++;
+    			//当遍历到这一层中最后一个元素时，则放入结果集合中，index == size
+    			if(index == levelSize) {
+    				list.add(cur.val);
+    			}
+    		}
+    	}
+    	return list;
+    }
+    
 }
