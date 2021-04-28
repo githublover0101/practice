@@ -77,12 +77,9 @@ public class TreeLevelTraversal {
 		List<List<Integer>> allList = new ArrayList<List<Integer>>();
 		if(root == null) return allList;
 		LinkedList<Integer> subList = null;
-		
 		//定义队列
 		LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
-		
 		queue.add(root);
-		
 		int rowIndex = 0;
 		while(!queue.isEmpty()) {
 			subList = new LinkedList<Integer>();

@@ -270,7 +270,6 @@ public class TreeSolution {
         		if(p.left != null) {
         			stack.push(p.left);
         		}
-                
                 //优先访问右子树
         		p = p.right;
         	} else {
@@ -854,4 +853,37 @@ public class TreeSolution {
         }
         return stack.isEmpty();
     }
+    
+    /**
+     * https://leetcode.com/problems/binary-tree-maximum-path-sum/
+     * 二叉树中最大路径和
+     * 
+     * max(left) + root.val + max(right)
+     * 
+     * 时间复杂度为O(n)，空间复杂度为O(n)，n为二叉树中的节点数
+     * @param root
+     * @return
+     */
+    int maxSum = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+    	maxPathToParent(root);
+        return maxSum;
+    }
+    
+    private int maxPathToParent(TreeNode root) {
+    	if(root == null) return 0;
+    	
+    	//计算左边分支到父节点的最大路径值，如果是负值，则返回0
+    	int left = Math.max(maxPathToParent(root.left), 0);
+    	
+    	//计算右边分支到父节点的最大路径值，如果是负值，则返回0
+    	int right = Math.max(maxPathToParent(root.right), 0);
+    	
+    	//最大路径 = left+right+root.val
+    	maxSum = Math.max(maxSum, root.val+left+right);
+        
+    	//单边到父节点的最大值，从left和right中取较大值
+    	return Math.max(left, right) + root.val;
+    }
+
 }
