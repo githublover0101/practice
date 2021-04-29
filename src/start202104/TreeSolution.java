@@ -11,6 +11,14 @@ class TreeNode {
 	int val;
 	TreeNode left;
 	TreeNode right;
+	
+	public TreeNode() {
+		
+	}
+	
+	public TreeNode(int val) {
+		this.val = val;
+	}
 }
 
 
@@ -669,6 +677,36 @@ public class TreeSolution {
 		if(root == null) return 0;
 		return numberOfNodes(root.left) + numberOfNodes(root.right) + 1;
 	}
+	
+	
+	/**
+	 * https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/
+	 * 剑指 Offer 54. 二叉搜索树的第k大节点
+	 * @param root
+	 * @param k
+	 * @return
+	 */
+	public int kthLargest(TreeNode root, int k) {
+        if(root == null) return -1;
+        
+        //获取第k大的数时，需检测右子树节点数
+        int rightNodes = getNodes(root.right);
+        if(rightNodes == k-1) {
+            return root.val;
+        } else if(rightNodes > k-1) {
+            return kthLargest(root.right, k);
+        } else {
+            return kthLargest(root.left, k-rightNodes-1);
+        }
+    }
+
+    private int getNodes(TreeNode root) {
+        if(root == null) return 0;
+        int left = getNodes(root.left);
+        int right = getNodes(root.right);
+        return left+right+1; 
+    }
+	
 
 	/** 
 	 * https://leetcode.com/problems/path-sum-ii/
@@ -925,4 +963,120 @@ public class TreeSolution {
     	return list;
     }
     
+    
+    /**
+     * https://leetcode-cn.com/problems/diameter-of-binary-tree/
+     * 二叉树的直径：求二叉数最远两个节点的距离
+     * 
+     * 时间复杂度：O(N)，其中 NN 为二叉树的节点数，即遍历一棵二叉树的时间复杂度，每个结点只被访问一次。
+     * 空间复杂度：O(Height)，其中 HeightHeight 为二叉树的高度。由于递归函数在递归过程中需要为每一层递归函数分配栈空间，
+     * 所以这里需要额外的空间且该空间取决于递归的深度，而递归的深度显然为二叉树的高度，
+     * 并且每次递归调用的函数里又只用了常数个变量，所以所需空间复杂度为 O(Height) 。
+     * 
+     */
+    int max = 0;
+    public int diameterOfBinaryTree(TreeNode root) {
+        depth(root);
+        return max;   
+    }
+    
+    //返回树节点root的深度，深度为max(left,right)+1；每次获取左右子树深度时，更新max，max = left+right
+    private int depth(TreeNode root) {
+        if(root == null) return 0;
+        int left = depth(root.left);
+        int right = depth(root.right);
+        
+        //max等于左子树结果+右子树结果
+        max = Math.max(max, left+right);
+        
+        //返回左右子树较大值+1，+1为root节点，
+        return Math.max(left,right) + 1;  // 返回该节点为根的子树的深度
+    }
+    
+    
+    /**
+     * 二叉树是否为完全二叉树校验
+     * 
+     * 层序遍历
+     * 思路：把一颗树的节点（包括空节点）按层序遍历排成一行，当且仅当存在两个相邻节点：前一个为null，后一个不为null时，才不是不是完全二叉树。
+     * 
+	 *     1
+	      / \
+	     2   3
+	    / \   \
+	   4   5   6
+	层序遍历序列为：[1, 2, 3, 4, 5, null, 6]，其中 null 出现在了6前面，所以不合法
+     * 
+     * 时间复杂度：每个点进队出队各一次，故渐进时间复杂度为 O(n)。
+     * 空间复杂度：队列中元素的个数不超过 n 个，故渐进空间复杂度为 O(n)
+     * 
+     * @param root
+     * @return
+     */
+    public boolean isCompleteTree(TreeNode root) {
+    	if(root == null) return false;
+    	LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+    	TreeNode prev = root;
+    	queue.add(root);
+    	while(!queue.isEmpty()) {
+    		TreeNode cur = queue.pop();
+    		if(prev == null && cur != null) {
+    			return false;
+    		}
+    		if(cur != null) {
+    			queue.add(cur.left); //不需要判空
+    			queue.add(cur.right); //不需要判空
+    		}
+    		prev = cur;
+    	}
+    	return true;
+    }
+    
+    
+    /**
+     * https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
+     * 
+     * 108. 将有序数组转换为二叉搜索树
+     * @param nums
+     * @return
+     */
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if(nums.length == 0) return null;
+        return sortedArrayToBST(nums, 0, nums.length-1);
+    }
+
+    private TreeNode sortedArrayToBST(int[] nums, int left, int right) {
+        if(left <= right) {
+            int mid = (left+right)/2;
+            TreeNode root = new TreeNode(nums[mid]);
+            root.left = sortedArrayToBST(nums, left, mid-1);
+            root.right = sortedArrayToBST(nums, mid+1, right);
+            return root;
+        }
+        return null;
+    }
+    
+    /**
+     * https://leetcode-cn.com/problems/binary-tree-paths/
+     * 257. 二叉树的所有路径
+     * 
+     */
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> list = new ArrayList<String>();
+        if(root == null) return list;
+        buildPath(root, "", list);
+        return list;
+    }
+
+    private void buildPath(TreeNode root, String res, List<String> list) {
+        if(root == null) return;
+        //字符串加上当前root val
+        res += root.val;
+        if(root.left == null && root.right == null) {
+            list.add(res);
+            return;
+        }
+        buildPath(root.left, res + "->", list);
+        buildPath(root.right, res + "->", list);
+    }
 }
