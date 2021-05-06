@@ -77,6 +77,47 @@ public class ListNodeSolution {
 	}
 	
 	
+	/**
+	 * https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+	 * K个一组反转链表
+	 * 
+	 * 时间复杂度为 O(n*K)，最好的情况为 O(n)，最差的情况未 O(n^2)
+	 * 空间复杂度为 O(1)，除了几个必须的节点指针外，没有占用其他空间
+	 * @param head
+	 * @param k
+	 * @return
+	 */
+	public ListNode reverseKGroup(ListNode head, int k) {
+		if(head == null || head.next == null) return head;
+		
+		//设置辅助节点
+		ListNode dummy = new ListNode(0);
+		dummy.next = head;
+		
+		ListNode start = dummy;
+		ListNode pre = dummy;
+		ListNode end = dummy;
+		
+		//循环k，每次找到[pre, start, end]节点，针对[start, end]之间进行反转，pre为start前面一个节点
+		while(end.next != null) {
+			for(int i = 0; i < k && end != null; i++) end = end.next;
+			//end==null说明不足k个节点，则跳出循环
+			if(end == null) break;
+			
+			ListNode next = end.next;
+			
+			start = pre.next;
+			end.next = null; //将end.next设置成null，便于reverse反转链表
+			
+			pre.next = reverse(start); 
+			start.next = next; //reverse之后start为最后一个节点，将start链接到next之前
+			end = start;
+			pre = start;
+		}
+		
+		return dummy.next;
+    }
+	
 	public static void main(String[] args) {
 		ListNodeSolution test = new ListNodeSolution();
 		int[] nums = {1,2,3,4,5};

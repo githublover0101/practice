@@ -310,8 +310,7 @@ public class ArraySolution {
 			stack.push(i%len);
 		}
 		return res;
-    }
-	
+    }	
 	
 	public static void main(String[] args) {
 		ArraySolution test = new ArraySolution();

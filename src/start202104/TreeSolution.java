@@ -1079,4 +1079,116 @@ public class TreeSolution {
         buildPath(root.left, res + "->", list);
         buildPath(root.right, res + "->", list);
     }
+    
+    
+    /**
+     * https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/
+     * 有序链表转化成二叉搜索树
+     * 
+     * 方法一：
+     * （1）快慢指针，找到中间节点slow，以及指向中间节点preSlow
+     * （2）head -> preSlow为左子树，需要将preSlow.next=null
+     * （3）slow.next 为右子树
+     * @param head
+     * @return
+     */
+    public TreeNode sortedListToBST(ListNode head) {
+    	if(head == null) return null;
+    	if(head.next == null) return new TreeNode(head.val);
+    	ListNode fast = head;
+    	ListNode slow = head;
+    	ListNode preSlow = head;
+    	while(fast != null && fast.next != null) {
+    		preSlow = slow;
+    		slow = slow.next;
+    		fast = fast.next.next;
+    	}
+    	
+    	//slow为中间节点，设置成root
+    	TreeNode root = new TreeNode(slow.val);
+    	
+    	//将preSlow指针设置成null
+    	preSlow.next = null;
+    	 
+    	root.left = sortedListToBST(head); //左子树
+    	root.right = sortedListToBST(slow.next); //右子树
+    	return root;
+    }
+    
+    /**
+     * https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/
+     * 有序链表转化成二叉搜索树
+     * 
+     * 方法二：
+     *  将有序链表转化成有序数组
+     * @param head
+     * @return
+     */
+    public TreeNode sortedListToBSTII(ListNode head) {
+    	int len = 0;
+    	ListNode p = head;
+    	while(p != null) {
+    		len++;
+    		p = p.next;
+    	}
+    	int[] nums = new int[len];
+    	p = head;
+    	int k = 0;
+    	while(p != null) {
+    		nums[k++] = p.val;
+    		p = p.next;
+    	}
+    	
+    	return buildBST(nums, 0, len-1);
+    }
+    
+    private TreeNode buildBST(int[] nums, int left, int right) {
+    	if(left <= right) {
+    		int mid = (left + right)/2;
+    		TreeNode root = new TreeNode(nums[mid]);
+    		root.left = buildBST(nums, left, mid-1);
+    		root.right = buildBST(nums, mid+1, right);
+            return root;
+    	}
+    	return null;
+    }
+    
+    /**
+     * https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/
+     * 有序链表转化成二叉搜索树
+     * 
+     * 方法三：
+     * 链表+每次链表的节点数
+     * 
+     * @param head
+     * @return
+     */
+    public TreeNode sortedListToBSTIII(ListNode head) {
+    	int len = 0;
+    	ListNode p = head;
+    	while(p != null) {
+    		len++;
+    		p = p.next;
+    	}
+    	
+    	return buildBST(head, len);
+    }
+    
+    private TreeNode buildBST(ListNode head, int len) {
+    	//注意边界，如果len <= 0，需要返回，说明已经没有节点了
+    	if(head == null || len <= 0) return null;
+    	int mid = (len+1)/2;
+    	ListNode p = head;
+    	int count = 1;
+    	while(count < mid) {
+    		count++;
+    		p = p.next;
+    	}
+    	TreeNode root = new TreeNode(p.val);
+    	ListNode right = p.next;
+    	p.next = null;
+    	root.left = buildBST(head, mid-1);
+    	root.right = buildBST(right, len-mid); //右子树的节点个数是 len-mid
+    	return root;
+    }
 }
