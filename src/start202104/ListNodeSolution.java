@@ -6,6 +6,9 @@ public class ListNodeSolution {
 	 * https://leetcode-cn.com/problems/reorder-list/
 	 * 重排链表
 	 * 
+	 * 类似题目：https://mp.weixin.qq.com/s/377FfqvpY8NwMInhpoDgsw
+	 * 链表，奇数位置按序增长，偶数位置按序递减，如何能实现链表从小到大？（2020.10 字节跳动-后端）[2]
+	 * 
 	 * @param head
 	 */
 	public void reorderList(ListNode head) {
