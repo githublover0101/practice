@@ -25,8 +25,6 @@ public class Player {
 	
 	
 	public void buyCards(Map<String, Integer> tokens, Map<String, Integer> cardRules) {
-		Set<Entry<String, Integer>> cardSet = cardRules.entrySet();
-		
 		int count = 0;
 		while(canBuy(tokens, cardRules)) {
 			removeTokens(tokens, cardRules);
